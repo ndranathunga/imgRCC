@@ -1,0 +1,22 @@
+[package]
+name = "img_rcc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Add dependencies for bindings and testing
+
+[build-dependencies]
+# You may need to add dependencies for building C++/CUDA bindings (e.g., bindgen or cxx)
+
+[lib]
+crate-type = ["cdylib"]
+name = "img_rcc"
+path = "rust_bindings/src/lib.rs"
+
+[[bin]]
+name = "img_rcc_bin"
+path = "rust_bindings/src/main.rs"
+
+[build]
+rustflags = ["-C", "link-arg=-limg_rcc"]
