@@ -1,3 +1,6 @@
+// #[cfg(feature = "benchmark")]
+pub mod benchmark;
+
 use std::ffi::{c_char, CString};
 use std::os::raw::{c_int, c_uchar};
 

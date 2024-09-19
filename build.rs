@@ -1,26 +1,49 @@
+use std::env;
 use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
+    // Tell Cargo to rerun this script if the build directory changes
+    println!("cargo:rerun-if-changed=");
+    println!("cargo:rerun-if-changed=build.rs");
+
     // Path to the build directory
     let build_dir = PathBuf::from("build");
 
+    // Check if we're building with the `benchmark` feature
+    let benchmark_enabled = env::var("CARGO_FEATURE_BENCHMARK").is_ok();
+
+    // if !build_dir.exists() {}
+
     // Step 1: Run CMake to configure the project if needed
-    if !build_dir.exists() {
-        let _status = Command::new("cmake")
-            .args(&["-S", ".", "-B", "build"])
-            .status()
-            .expect("Failed to generate CMake build files.");
+    let mut cmake_args = vec!["-S", ".", "-B", "build"];
+    // Set the build type based on whether `benchmark` is enabled or not
+    if benchmark_enabled {
+        cmake_args.push("-DCMAKE_BUILD_TYPE=Benchmark");
+    }
+    //  else {
+    //     cmake_args.push("-DCMAKE_BUILD_TYPE=Release");
+    // }
+
+    let status = Command::new("cmake")
+        .args(&cmake_args)
+        .status()
+        .expect("Failed to generate CMake build files.");
+
+    // Check if the command succeeded
+    if !status.success() {
+        panic!("CMake configuration failed.");
     }
 
     // Step 2: Run CMake to build the C++/CUDA project
-    let _status = Command::new("cmake")
+    let status = Command::new("cmake")
         .args(&["--build", "build"])
         .status()
         .expect("Failed to build C++/CUDA project with CMake.");
 
-    // Tell Cargo to rerun this script if the build directory changes
-    println!("cargo:rerun-if-changed=build/");
+    if !status.success() {
+        panic!("CMake build failed.");
+    }
 
     // Add the search path for the compiled C++/CUDA libraries
     let lib_dir = build_dir.join("lib");

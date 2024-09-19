@@ -2,13 +2,26 @@
 name = "img_rcc"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
+criterion = { version = "0.5", optional = true }
+
+[dev-dependencies]
 
 [build-dependencies]
 
 [lib]
 crate-type = ["rlib"]
 
-[build]
-build = "build.rs"
+# [build]
+# build = "build.rs"
+
+[features]
+benchmark = ["criterion"]
+
+[[bench]]
+name = "bench_gpu"
+path = "benchmarks/benchmark_gpu.rs"
+harness = false
+required-features = ["benchmark"]
