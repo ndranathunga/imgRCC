@@ -39,28 +39,28 @@ void convert_to_grayscale_gpu(Image &image)
 #endif
 
     // Measure host-to-device transfer time
-    unsigned char *d_data;
+    // unsigned char *d_data;
 
 #ifdef BENCHMARK_MODE
     cudaEventRecord(start);
     auto start_ = std::chrono::high_resolution_clock::now();
 #endif
-    cudaError_t error = cudaMalloc(&d_data, image.width * image.height * image.channels);
-    if (error != cudaSuccess)
-    {
-        std::cerr << "CUDA Error (cudaMalloc): " << cudaGetErrorString(error) << std::endl;
-        exit(1);
-    }
-    error = cudaMemcpy(d_data, image.data, image.width * image.height * image.channels, cudaMemcpyHostToDevice);
-    if (error != cudaSuccess)
-    {
-        std::cerr << "CUDA Error (cudaMemcpy HostToDevice): " << cudaGetErrorString(error) << std::endl;
-        exit(1);
-    }
+    // cudaError_t error = cudaMalloc(&d_data, image.width * image.height * image.channels);
+    // if (error != cudaSuccess)
+    // {
+    //     std::cerr << "CUDA Error (cudaMalloc): " << cudaGetErrorString(error) << std::endl;
+    //     exit(1);
+    // }
+    // error = cudaMemcpy(d_data, image.data, image.width * image.height * image.channels, cudaMemcpyHostToDevice);
+    // if (error != cudaSuccess)
+    // {
+    //     std::cerr << "CUDA Error (cudaMemcpy HostToDevice): " << cudaGetErrorString(error) << std::endl;
+    //     exit(1);
+    // }
 #ifdef BENCHMARK_MODE
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
-    error = cudaEventElapsedTime(&stats.host_to_device_time_cuda, start, stop);
+    cudaError_t error = cudaEventElapsedTime(&stats.host_to_device_time_cuda, start, stop);
     if (error != cudaSuccess)
     {
         std::cerr << "CUDA Error: " << cudaGetErrorString(error) << std::endl;
@@ -79,9 +79,13 @@ void convert_to_grayscale_gpu(Image &image)
     start_ = std::chrono::high_resolution_clock::now();
 #endif
 
-    grayscale_kernel<<<gridSize, blockSize>>>(d_data, image.width, image.height, image.channels);
+    grayscale_kernel<<<gridSize, blockSize>>>(image.data, image.width, image.height, image.channels);
 
+#ifdef BENCHMARK_MODE
     error = cudaGetLastError();
+#else
+    cudaError_t error = cudaGetLastError();
+#endif
     if (error != cudaSuccess)
     {
         std::cerr << "CUDA Error (kernel launch): " << cudaGetErrorString(error) << std::endl;
@@ -104,12 +108,12 @@ void convert_to_grayscale_gpu(Image &image)
     cudaEventRecord(start);
     start_ = std::chrono::high_resolution_clock::now();
 #endif
-    error = cudaMemcpy(image.data, d_data, image.width * image.height * image.channels, cudaMemcpyDeviceToHost);
-    if (error != cudaSuccess)
-    {
-        std::cerr << "CUDA Error (cudaMemcpy DeviceToHost): " << cudaGetErrorString(error) << std::endl;
-        exit(1);
-    }
+    // error = cudaMemcpy(image.data, d_data, image.width * image.height * image.channels, cudaMemcpyDeviceToHost);
+    // if (error != cudaSuccess)
+    // {
+    //     std::cerr << "CUDA Error (cudaMemcpy DeviceToHost): " << cudaGetErrorString(error) << std::endl;
+    //     exit(1);
+    // }
 #ifdef BENCHMARK_MODE
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
@@ -124,7 +128,7 @@ void convert_to_grayscale_gpu(Image &image)
 #endif
 
     // Free GPU memory
-    cudaFree(d_data);
+    // cudaFree(d_data);
 
 #ifdef BENCHMARK_MODE
     cudaEventDestroy(start);

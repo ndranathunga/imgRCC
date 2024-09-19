@@ -11,8 +11,11 @@ include(${CMAKE_SOURCE_DIR}/cmake/CudaConfig.cmake)
 set(SOURCE_FILES
     src/cpp/common.cpp
     src/cpp/image.cpp
+    src/cuda/image.cu
     src/cpp/algorithms_cpu.cpp
     src/cuda/algorithms_gpu.cu
+    src/cpp/common.cpp
+    src/cuda/common.cu
 )
 
 # Add a library target for the project (C++/CUDA integration)

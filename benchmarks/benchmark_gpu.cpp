@@ -5,7 +5,7 @@
 int main()
 {
     // Load the image for benchmarking
-    Image image = load_image("../../input.png");
+    Image image = load_image_gpu("../../input.png");
 
 // Run the grayscale conversion on GPU
 #ifdef BENCHMARK_MODE
@@ -19,10 +19,10 @@ int main()
     std::cout << "Device to host time (Chrono): " << stats.device_to_host_time_chrono << " ms" << std::endl;
 #endif
     // Save the result
-    save_image("output_benchmark.png", image);
+    save_image_gpu("output_benchmark.png", image);
 
     // Free the image
-    free_image(image);
+    free_image_gpu(image);
 
     return 0;
 }

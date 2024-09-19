@@ -15,8 +15,14 @@ extern "C"
         unsigned char *data;
     };
 
-    Image load_image(const char* file_path);
-    void save_image(const char* file_path, const Image &image);
-    void free_image(Image image);
+    // CPU Functions
+    Image load_image_cpu(const char* file_path);
+    void save_image_cpu(const char* file_path, const Image &image);
+    void free_image_cpu(Image *image);
+
+    // GPU Functions
+    Image load_image_gpu(const char* file_path);
+    void save_image_gpu(const char* file_path, const Image &image);
+    void free_image_gpu(Image image);
 }
 #endif // IMAGE_LOADER_HPP
