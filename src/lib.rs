@@ -1,5 +1,5 @@
-#[cfg(feature = "benchmark")]
-pub mod benchmark;
+// #[cfg(feature = "benchmark")] // currently removed because no need for specific benchmarking codes
+// pub mod benchmark;
 
 use std::ffi::{c_char, CString};
 use std::os::raw::{c_int, c_uchar};
@@ -10,7 +10,7 @@ pub struct Image {
     width: c_int,
     height: c_int,
     channels: c_int,
-    data: *mut c_uchar,
+    pub data: *mut c_uchar,
     device: Device,
 }
 
