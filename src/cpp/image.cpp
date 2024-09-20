@@ -8,20 +8,20 @@
 #include <stdexcept>
 #include <iostream>
 
-Image load_image_cpu(const char *file_path)
+Image *load_image_cpu(const char *file_path)
 {
-    Image image;
-    image.data = stbi_load(file_path, &image.width, &image.height, &image.channels, 0);
-    if (!image.data)
+    Image *image = new Image();
+    image->data = stbi_load(file_path, &image->width, &image->height, &image->channels, 0);
+    if (!image->data)
     {
         throw std::runtime_error("failed to load image: " + std::string(file_path));
     }
     return image;
 }
 
-void save_image_cpu(const char *file_path, const Image &image)
+void save_image_cpu(const char *file_path, const Image *image)
 {
-    int success = stbi_write_png(file_path, image.width, image.height, image.channels, image.data, image.width * image.channels);
+    int success = stbi_write_png(file_path, image->width, image->height, image->channels, image->data, image->width * image->channels);
     if (!success)
     {
         throw std::runtime_error("failed to save image");

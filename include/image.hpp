@@ -11,18 +11,17 @@ extern "C"
         int width;
         int height;
         int channels;
-        // std::vector<unsigned char> data;
         unsigned char *data;
     };
 
     // CPU Functions
-    Image load_image_cpu(const char* file_path);
-    void save_image_cpu(const char* file_path, const Image &image);
+    Image *load_image_cpu(const char *file_path);
+    void save_image_cpu(const char *file_path, const Image *image);
     void free_image_cpu(Image *image);
 
     // GPU Functions
-    Image load_image_gpu(const char* file_path);
-    void save_image_gpu(const char* file_path, const Image &image);
-    void free_image_gpu(Image image);
+    Image *load_image_gpu(const char *file_path);
+    void save_image_gpu(const char *file_path, const Image *image);
+    void free_image_gpu(Image *image);
 }
 #endif // IMAGE_LOADER_HPP

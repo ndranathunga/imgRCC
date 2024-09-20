@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use img_rcc::{free_image, Device, Image};
+use img_rcc::{Device, Image};
 
 fn benchmark_grayscale(c: &mut Criterion) {
     let mut group = c.benchmark_group("GPU Grayscale");
@@ -15,9 +15,9 @@ fn benchmark_grayscale(c: &mut Criterion) {
 
                 for _ in 0..iters {
                     let start_time = std::time::Instant::now();
-                    let image = Image::load_to_device(image_path, Device::CPU);
+                    let _image = Image::load_to_device(image_path, Device::CPU);
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -34,9 +34,9 @@ fn benchmark_grayscale(c: &mut Criterion) {
 
                 for _ in 0..iters {
                     let start_time = std::time::Instant::now();
-                    let image = Image::load_to_device(image_path, Device::GPU);
+                    let _image = Image::load_to_device(image_path, Device::GPU);
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -56,7 +56,7 @@ fn benchmark_grayscale(c: &mut Criterion) {
                     let start_time = std::time::Instant::now();
                     image.to(Device::CPU);
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -76,7 +76,7 @@ fn benchmark_grayscale(c: &mut Criterion) {
                     let start_time = std::time::Instant::now();
                     image.to(Device::GPU);
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -96,7 +96,7 @@ fn benchmark_grayscale(c: &mut Criterion) {
                     let start_time = std::time::Instant::now();
                     image.grayscale();
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -105,26 +105,26 @@ fn benchmark_grayscale(c: &mut Criterion) {
     );
 
     // FIXME: This benchmark is not working as expected; fix later
-    // group.bench_with_input(
-    //     BenchmarkId::new("Grayscale on GPU", image_path),
-    //     &image_path,
-    //     |b, &image_path| {
-    //         b.iter_custom(|iters| {
-    //             let mut total_duration = std::time::Duration::new(0, 0);
+    group.bench_with_input(
+        BenchmarkId::new("Grayscale on GPU", image_path),
+        &image_path,
+        |b, &image_path| {
+            b.iter_custom(|iters| {
+                let mut total_duration = std::time::Duration::new(0, 0);
 
-    //             for _ in 0..iters {
-    //                 let mut image = Image::load_to_device(image_path, Device::GPU);
-    //                 // image.to(Device::GPU);
-    //                 let start_time = std::time::Instant::now();
-    //                 image.grayscale();
-    //                 total_duration += start_time.elapsed();
-    //                 free_image(image);
-    //             }
+                for _ in 0..iters {
+                    let mut image = Image::load_to_device(image_path, Device::GPU);
+                    // image.to(Device::GPU);
+                    let start_time = std::time::Instant::now();
+                    image.grayscale();
+                    total_duration += start_time.elapsed();
+                    // free_image(image);
+                }
 
-    //             total_duration
-    //         });
-    //     },
-    // );
+                total_duration
+            });
+        },
+    );
 
     group.bench_with_input(
         BenchmarkId::new("Save from CPU", image_path),
@@ -138,7 +138,7 @@ fn benchmark_grayscale(c: &mut Criterion) {
                     let start_time = std::time::Instant::now();
                     image.save("output_cpu.png");
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -158,7 +158,7 @@ fn benchmark_grayscale(c: &mut Criterion) {
                     let start_time = std::time::Instant::now();
                     image.save("output_gpu.png");
                     total_duration += start_time.elapsed();
-                    free_image(image);
+                    // free_image(image);
                 }
 
                 total_duration
@@ -174,9 +174,9 @@ fn benchmark_grayscale(c: &mut Criterion) {
                 let mut total_duration = std::time::Duration::new(0, 0);
 
                 for _ in 0..iters {
-                    let image = Image::load_to_device(image_path, Device::CPU);
+                    let _image = Image::load_to_device(image_path, Device::CPU);
                     let start_time = std::time::Instant::now();
-                    free_image(image);
+                    // free_image(image);
                     total_duration += start_time.elapsed();
                 }
 
@@ -193,9 +193,9 @@ fn benchmark_grayscale(c: &mut Criterion) {
                 let mut total_duration = std::time::Duration::new(0, 0);
 
                 for _ in 0..iters {
-                    let image = Image::load_to_device(image_path, Device::GPU);
+                    let _image = Image::load_to_device(image_path, Device::GPU);
                     let start_time = std::time::Instant::now();
-                    free_image(image);
+                    // free_image(image);
                     total_duration += start_time.elapsed();
                 }
 

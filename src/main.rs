@@ -1,5 +1,5 @@
 // #[cfg(not(feature = "benchmark"))]
-use img_rcc::{free_image, Device, Image};
+use img_rcc::{Device, Image};
 use std::time::Instant;
 
 // #[cfg(not(feature = "benchmark"))]
@@ -8,14 +8,14 @@ fn main() {
 
     println!("\x1b[32mRunning the benchmark for load to device:\x1b[0m");
     let start_load_to_device = Instant::now();
-    let image = Image::load_to_device(image_path, Device::GPU);
+    let _image = Image::load_to_device(image_path, Device::GPU);
     let duration_load_to_device = start_load_to_device.elapsed();
     println!(
         "Time taken for load to device: {:?}",
         duration_load_to_device
     );
 
-    free_image(image);
+    // free_image(image);
 
     println!("\x1b[32mRunning the benchmark for GPU:\x1b[0m");
     let start_load_gpu = Instant::now();
@@ -39,7 +39,7 @@ fn main() {
     println!("Time taken for GPU save: {:?}", duration_save_gpu);
 
     let start_free_gpu = Instant::now();
-    free_image(image);
+    // free_image(image);
     let duration_free_gpu = start_free_gpu.elapsed();
     println!("Time taken for GPU free: {:?}", duration_free_gpu);
 
@@ -52,6 +52,7 @@ fn main() {
     let start_transfer = Instant::now();
     image.to(Device::CPU);
     let duration_transfer = start_transfer.elapsed();
+    // println!("Channels: {}", image.channels);
     println!("Time taken for CPU transfer: {:?}", duration_transfer);
 
     let start_grayscale_cpu = Instant::now();
@@ -65,7 +66,7 @@ fn main() {
     println!("Time taken for CPU save: {:?}", duration_save_cpu);
 
     let start_free_cpu = Instant::now();
-    free_image(image);
+    // free_image(image);
     let duration_free_cpu = start_free_cpu.elapsed();
     println!("Time taken for CPU free: {:?}", duration_free_cpu);
 }
