@@ -207,22 +207,25 @@ fn benchmark_grayscale(c: &mut Criterion) {
     group.finish();
 }
 
-fn configure_criterion() -> Criterion {
-    Criterion::default()
-        .configure_from_args() // Configures based on command line arguments passed
-        .warm_up_time(std::time::Duration::from_secs(3)) // Time for warming up before measuring
-        .measurement_time(std::time::Duration::from_secs(20)) // Time allocated for each benchmark run
-        .sample_size(10) // Sets the number of samples to collect per benchmark
-        .nresamples(100_000) // Number of resamples for statistical noise reduction
-        .noise_threshold(0.05) // Acceptable noise threshold before deciding the result is noisy
-        .with_plots() // Enables plotting of the benchmark results (optional)
-                      // .without_plots() // Disable plotting (optional if you want plots)
-}
+// fn configure_criterion() -> Criterion {
+//     Criterion::default()
+//         .configure_from_args() // Configures based on command line arguments passed
+//         .warm_up_time(std::time::Duration::from_secs(3)) // Time for warming up before measuring
+//         .measurement_time(std::time::Duration::from_secs(20)) // Time allocated for each benchmark run
+//         .sample_size(10) // Sets the number of samples to collect per benchmark
+//         .nresamples(100_000) // Number of resamples for statistical noise reduction
+//         .noise_threshold(0.05) // Acceptable noise threshold before deciding the result is noisy
+//         .with_plots() // Enables plotting of the benchmark results (optional)
+//                       // .without_plots() // Disable plotting (optional if you want plots)
+// }
 
-criterion_group! {
-    name = benches;
-    config = configure_criterion();
-    targets = benchmark_grayscale
-}
+// criterion_group! {
+//     name = benches;
+//     config = configure_criterion();
+//     targets = benchmark_grayscale
+// }
 
+// criterion_main!(benches);
+
+criterion_group!(benches, benchmark_grayscale);
 criterion_main!(benches);

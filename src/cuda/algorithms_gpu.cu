@@ -19,6 +19,47 @@ __global__ void grayscale_kernel(unsigned char *data, int width, int height, int
     data[idx * channels + 2] = gray;
 }
 
+// CUDA kernel for 2D image convolution
+__global__ void convolve_kernel(unsigned char *input, unsigned char *output, int width, int height, int channels, const float *kernel, int kernel_width, int kernel_height)
+{
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= width || y >= height)
+        return;
+
+    int kx_offset = kernel_width / 2;
+    int ky_offset = kernel_height / 2;
+
+    // Iterate over channels
+    for (int c = 0; c < channels; c++)
+    {
+        float pixel_sum = 0.0f;
+
+        // Apply kernel to the pixel and its neighbors
+        for (int ky = 0; ky < kernel_height; ky++)
+        {
+            for (int kx = 0; kx < kernel_width; kx++)
+            {
+                int img_x = x + kx - kx_offset;
+                int img_y = y + ky - ky_offset;
+
+                // Ensure indices are within bounds
+                if (img_x >= 0 && img_x < width && img_y >= 0 && img_y < height)
+                {
+                    int img_idx = (img_y * width + img_x) * channels + c;
+                    int kernel_idx = ky * kernel_width + kx;
+                    pixel_sum += input[img_idx] * kernel[kernel_idx];
+                }
+            }
+        }
+
+        // Clamp result to 0-255 and assign to output image
+        int output_idx = (y * width + x) * channels + c;
+        output[output_idx] = min(max(static_cast<int>(pixel_sum), 0), 255);
+    }
+}
+
 void convert_to_grayscale_gpu(Image &image)
 {
     // Check if image data is valid
@@ -62,4 +103,32 @@ void convert_to_grayscale_gpu(Image &image)
         exit(1);
     }
     cudaDeviceSynchronize();
+}
+
+void convolve_image_gpu(Image *image, const float *kernel, int kernel_width, int kernel_height)
+{
+    int img_size = image->width * image->height * image->channels;
+
+    unsigned char *d_input = image->data;
+    unsigned char *d_output;
+    float *d_kernel;
+
+    // Allocate memory for output and kernel on the GPU
+    cudaMalloc(&d_output, img_size * sizeof(unsigned char));
+    cudaMalloc(&d_kernel, kernel_width * kernel_height * sizeof(float));
+
+    // Copy kernel data to the device
+    cudaMemcpy(d_kernel, kernel, kernel_width * kernel_height * sizeof(float), cudaMemcpyHostToDevice);
+
+    dim3 blockDim(16, 16);
+    dim3 gridDim((image->width + blockDim.x - 1) / blockDim.x, (image->height + blockDim.y - 1) / blockDim.y);
+
+    convolve_kernel<<<gridDim, blockDim>>>(d_input, d_output, image->width, image->height, image->channels, d_kernel, kernel_width, kernel_height);
+
+    // Free the original image data and update the image to point to the result in GPU memory
+    cudaFree(image->data);
+    image->data = d_output;
+
+    // Free the kernel memory
+    cudaFree(d_kernel);
 }
