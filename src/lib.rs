@@ -14,12 +14,14 @@ use kernel::Kernel;
 pub struct Image {
     image_data: ImageData,
     device: Device,
+    color_space: ColorSpace,
 }
 
 #[cfg(any(test, feature = "benchmark"))]
 pub struct Image {
     pub(crate) image_data: ImageData,
     pub device: Device,
+    pub color_space: ColorSpace,
 }
 
 /// Struct representing the image data loaded from an image file.
@@ -39,19 +41,32 @@ struct ImageData {
 
 /// Enum representing the device where the image is stored, either CPU or GPU.
 #[derive(PartialEq, Debug)]
-#[repr(C)]
 pub enum Device {
     CPU,
     GPU,
 }
 
+#[derive(PartialEq, Debug)]
+enum ColorSpace {
+    RGB,
+    HSV,
+    YCBCR,
+}
+
+// TODO: Load the images depending on the file format (e.g., PNG, JPEG, BMP, etc.) || Color space (RGB, HSV, YCbCr)
+
 extern "C" {
     fn load_image_cpu(file_path: *const c_char) -> *mut ImageData;
-    fn save_image_cpu(file_path: *const c_char, image: *mut ImageData);
+
+    fn save_image_rgb_cpu(file_path: *const c_char, image: *mut ImageData);
+    fn save_image_hsv_as_rgb_cpu(file_path: *const c_char, image: *mut ImageData);
+    fn save_image_ycbcr_as_jpeg_cpu(file_path: *const c_char, image: *mut ImageData);
+
     fn free_image_cpu(image: *mut ImageData);
 
     fn load_image_gpu(file_path: *const c_char) -> *mut ImageData;
-    fn save_image_gpu(file_path: *const c_char, image: *mut ImageData);
+    fn save_image_rgb_gpu(file_path: *const c_char, image: *mut ImageData);
+    // TODO: Add save_image_hsv_as_rgb_gpu and save_image_ycbcr_as_jpeg_gpu
     fn free_image_gpu(image: *mut ImageData);
 
     fn convert_to_grayscale_cpu(image: *mut ImageData);
@@ -69,6 +84,15 @@ extern "C" {
         width: c_int,
         height: c_int,
     );
+
+    fn convert_image_rgb_to_hsv_cpu(image: *mut ImageData);
+    fn convert_image_rgb_to_ycbcr_cpu(image: *mut ImageData);
+    fn convert_image_ycbcr_to_rgb_cpu(image: *mut ImageData);
+    fn convert_image_hsv_to_rgb_cpu(image: *mut ImageData);
+
+    fn convert_image_rgb_to_hsv_gpu(image: *mut ImageData);
+    fn convert_image_rgb_to_ycbcr_gpu(image: *mut ImageData);
+    // TODO: Add convert_image_ycbcr_to_rgb_gpu and convert_image_hsv_to_rgb_gpu
 
     fn transfer_to_gpu(image: *mut ImageData);
     fn transfer_to_cpu(image: *mut ImageData);
@@ -97,6 +121,7 @@ impl Image {
         Image {
             image_data,
             device: Device::CPU,
+            color_space: ColorSpace::RGB,
         }
     }
 
@@ -130,7 +155,11 @@ impl Image {
                 unsafe { ptr::read(image_ptr) }
             }
         };
-        Image { image_data, device }
+        Image {
+            image_data,
+            device,
+            color_space: ColorSpace::RGB,
+        }
     }
 
     /// Save the image to the specified file path.
@@ -144,13 +173,13 @@ impl Image {
 
         match self.device {
             Device::CPU => unsafe {
-                save_image_cpu(
+                save_image_rgb_cpu(
                     c_file_path.as_ptr(),
                     &self.image_data as *const ImageData as *mut ImageData,
                 );
             },
             Device::GPU => unsafe {
-                save_image_gpu(
+                save_image_rgb_gpu(
                     c_file_path.as_ptr(),
                     &self.image_data as *const ImageData as *mut ImageData,
                 );
@@ -207,7 +236,7 @@ impl Image {
     ///
     /// * `kernel` - A reference to a `Kernel` struct that defines the kernel data to be applied
     ///              during convolution. The kernel must have valid dimensions and data.
-    /// 
+    ///
     /// This function supports applying both custom and predefined kernels to an image.
     pub fn convolve(&mut self, kernel: &Kernel) {
         match self.device {
@@ -226,6 +255,28 @@ impl Image {
                     kernel.width,
                     kernel.height,
                 );
+            },
+        }
+    }
+
+    pub fn rgb_to_hsv(&mut self) {
+        match self.device {
+            Device::CPU => unsafe {
+                convert_image_rgb_to_hsv_cpu(&mut self.image_data as *mut ImageData);
+            },
+            Device::GPU => unsafe {
+                convert_image_rgb_to_hsv_gpu(&mut self.image_data as *mut ImageData);
+            },
+        }
+    }
+
+    pub fn rgb_to_ycbcr(&mut self) {
+        match self.device {
+            Device::CPU => unsafe {
+                convert_image_rgb_to_ycbcr_cpu(&mut self.image_data as *mut ImageData);
+            },
+            Device::GPU => unsafe {
+                convert_image_rgb_to_ycbcr_gpu(&mut self.image_data as *mut ImageData);
             },
         }
     }

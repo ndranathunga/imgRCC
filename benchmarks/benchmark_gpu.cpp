@@ -49,9 +49,9 @@ int main()
     std::cout << "Elapsed time (GPU 2): " << elapsed.count() << " ms" << std::endl;
 
     // Save the results
-    save_image_gpu("output_gpu.png", image_gpu);
-    save_image_cpu("output_cpu.png", image_cpu);
-    save_image_gpu("output_gpu2.png", image_transfer);
+    save_image_rgb_gpu("output_gpu.png", image_gpu);
+    save_image_rgb_cpu("output_cpu.png", image_cpu);
+    save_image_rgb_gpu("output_gpu2.png", image_transfer);
     std::cout << "came here..." << std::endl;
 
     std::cout << "Images saved." << std::endl;

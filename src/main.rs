@@ -18,6 +18,11 @@ fn main() {
     image.to(Device::GPU);
     image.convolve(&gaussian_kernel_5x5); // Apply the 5x5 Gaussian blur
     image.save("jenna_gaussian_13x13.png");
+
+    let mut image = Image::load("jenna.png");
+    let sharpen_kernel = get_kernel(KernelType::Sharpen3x3);
+    image.convolve(&sharpen_kernel);
+    image.save("jenna_sharpen.png");
 }
 
 // fn main() {

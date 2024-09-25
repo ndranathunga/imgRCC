@@ -31,7 +31,7 @@ Image *load_image_gpu(const char *file_path)
     return image;
 }
 
-void save_image_gpu(const char *file_path, const Image *image)
+void save_image_rgb_gpu(const char *file_path, const Image *image)
 {
     // Allocate memory on the CPU to receive the image from GPU
     unsigned char *h_data = new unsigned char[image->width * image->height * image->channels];
@@ -46,7 +46,7 @@ void save_image_gpu(const char *file_path, const Image *image)
 
     // Save the image from CPU memory
     Image temp_image = {image->width, image->height, image->channels, h_data};
-    save_image_cpu(file_path, &temp_image);
+    save_image_rgb_cpu(file_path, &temp_image);
 
     // Free the temporary CPU memory
     delete[] h_data;

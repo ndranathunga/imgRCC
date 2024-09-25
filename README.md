@@ -15,33 +15,31 @@ Through this project, I'm learning:
 ## Current Features
 
 - **Image Loading and Saving**:
-   - Implemented image loading and saving using **stb_image** and **stb_image_write** headers, allowing support for multiple image formats (PNG, JPEG, BMP).
+   - Implemented image loading and saving using **stb_image** and **stb_image_write** headers, supporting multiple image formats (PNG, JPEG, BMP).
 
-- **Grayscale Conversion**: 
-  - Implemented both as a **CPU-based** function (in **C++**) and as a **GPU-based** function (in **CUDA**).
-  - Usable via **Rust** bindings.
+- **Grayscale Conversion**:
+   - Implemented both **CPU-based** and **GPU-based** grayscale conversion functions.
+   - Usable through **Rust** bindings, with high performance on large images due to GPU acceleration.
+
+- **Image Convolution**:
+   - Supports applying various convolution kernels, such as **Gaussian Blur**, **Sharpening**, and **Edge Detection**.
+   - Implemented for both **CPU (C++)** and **GPU (CUDA)**, allowing for flexible image manipulation.
+
+- **Custom and Predefined Kernels**:
+   - Provides predefined kernels (e.g., **3x3 Gaussian Blur**, **3x3 Sharpen**, **Sobel Edge Detection**).
+   - Dynamically generates **NxN** kernels for both **Gaussian Blur** and **Sharpening** operations.
+   - Detect edges in an image using the **Sobel operator**.
+   - Supports custom kernel creation for more advanced image processing use cases.
 
 - **Benchmarking Tools**:
-   - Tools to compare the performance of **CPU vs. GPU** implementations, so users can evaluate the best option based on their use case.
+   - Tools to compare the performance of **CPU vs. GPU** implementations, allowing users to evaluate the optimal processing method based on image size and complexity.
 
 ## Upcoming Features (Planned Functions)
 
-1. **Image Convolution**:
-   - Implement a flexible convolution function to apply various filters (e.g., sharpening, blurring) to images. 
-   - Versions will be written in both **C++** (CPU) and **CUDA** (GPU).
-
-2. **Gaussian Blur**:
-   - A popular technique for smoothing images, implemented with both CPU and GPU versions.
-   - This will demonstrate how algorithms can benefit from GPU acceleration on large images.
-
-3. **Sobel Edge Detection**:
-   - Detect edges in an image using the **Sobel operator**.
-   - Parallelized GPU version to significantly speed up this computation.
-
-4. **Color Conversion (RGB to HSV/YCbCr)**:
+1. **Color Conversion (RGB to HSV/YCbCr)**:
    - Functions to convert images between color spaces, useful for more advanced image processing operations.
 
-5. **Thresholding**:
+2. **Thresholding**:
    - Binary thresholding of images to help with segmentation tasks.
    - Fast, parallelizable version using CUDA.
 
