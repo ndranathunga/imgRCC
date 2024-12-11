@@ -9,7 +9,7 @@ repository = "https://github.com/ndranathunga/imgRCC"
 documentation = "https://docs.rs/img_rcc"  
 readme = "README.md" 
 keywords = ["image-processing", "cuda", "rust", "benchmark", "gpu"] 
-categories = ["image-processing", "algorithms", "data-processing"]  
+categories = ["computer-vision", "multimedia::images", "algorithms", "graphics", "development-tools::profiling"]
 include = [
     "src/**",
     "include/**",
